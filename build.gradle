@@ -23,15 +23,31 @@ ext {
 	set('testcontainersVersion', "1.17.3")
 }
 
+bootJar {
+	archiveName 'fe-auth.jar'
+}
+
 dependencies {
-	implementation 'org.liquibase:liquibase-core'
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.liquibase:liquibase-core'
+	implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.1.2.Final'
+
+
 	compileOnly 'org.projectlombok:lombok'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
 	runtimeOnly 'org.postgresql:postgresql'
+
 	annotationProcessor 'org.projectlombok:lombok'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:kafka'
@@ -43,6 +59,12 @@ dependencyManagement {
 		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+docker {
+	dependsOn(build)
+	name "${project.group}/${jar.baseName}"
+	files bootJar
 }
 
 tasks.named('test') {
