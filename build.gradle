@@ -1,12 +1,52 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
 	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
 	id 'java'
 }
 
-group = 'auth'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '15'
+group = 'parent'
+version = '0.0.1-SNAPSHOT-1'
+sourceCompatibility = '18'
+targetCompatibility = '18'
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+
+	sourceCompatibility = '18'
+	targetCompatibility = '18'
+
+	repositories {
+		mavenCentral()
+	}
+
+	ext {
+		set('springCloudVersion', "2021.0.3")
+		set('testcontainersVersion', "1.17.3")
+	}
+
+	dependencyManagement {
+		imports {
+			mavenBom SpringBootPlugin.BOM_COORDINATES
+			mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		}
+	}
+
+	dependencies {
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+
+		testImplementation 'org.junit.jupiter:junit-jupiter-api'
+		testImplementation 'org.testcontainers:postgresql'
+	}
+}
 
 configurations {
 	compileOnly {
@@ -18,54 +58,19 @@ repositories {
 	mavenCentral()
 }
 
-ext {
-	set('springCloudVersion', "2021.0.3")
-	set('testcontainersVersion', "1.17.3")
+bootJar {
+	enabled = false
 }
 
-bootJar {
-	archiveName 'fe-auth.jar'
+jar {
+	enabled = true
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	implementation 'org.springframework.kafka:spring-kafka'
-	implementation 'org.liquibase:liquibase-core'
-	implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.1.2.Final'
-
-
-	compileOnly 'org.projectlombok:lombok'
-
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-	runtimeOnly 'org.postgresql:postgresql'
-
-	annotationProcessor 'org.projectlombok:lombok'
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:kafka'
-	testImplementation 'org.testcontainers:postgresql'
+	implementation project(':shares')
+	implementation 'io.spring.gradle:dependency-management-plugin'
 }
 
-dependencyManagement {
-	imports {
-		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
-}
-
-docker {
-	dependsOn(build)
-	name "${project.group}/${jar.baseName}"
-	files bootJar
-}
 
 tasks.named('test') {
 	useJUnitPlatform()

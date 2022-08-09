@@ -1,3 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/migrations/changeset_auth_1.0.yaml
