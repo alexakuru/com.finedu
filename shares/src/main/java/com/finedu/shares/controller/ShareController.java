@@ -16,5 +16,6 @@ public record ShareController(ShareService shareService) {
     @PostMapping()
     public void registerShare(@RequestBody ShareRegistrationRequest shareRequest) {
         log.info("New share request {}", shareRequest);
+        shareService.shareRegistration(shareRequest);
     }
 }

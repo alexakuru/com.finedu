@@ -1,3 +1,4 @@
 rootProject.name = 'com.finedu'
 include 'shares'
+include 'report'
 

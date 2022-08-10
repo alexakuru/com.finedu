@@ -1,12 +1,12 @@
 server:
-  port: 8081
+  port: 8082
 
 spring:
   application:
-    name: share
+    name: report
   datasource:
     username: postgres
-    url: jdbc:postgresql://localhost:5432/shares
+    url: jdbc:postgresql://localhost:5432/report
     password: admin
   jpa:
     hibernate:
